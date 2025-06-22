@@ -26,21 +26,38 @@ enum ModuleNames {
   }
 
 enum ModuleStatus { 
-  DONE 
+  NOT_STARTED
   IN_PROGRESS 
   COMPLETED 
 }
 
-model ModuleMetadata {
+model UserModuleInfo {
+  id          Int            @id @default(autoincrement())
+  userId      String
+  moduleId    Int
+
+  status      ModuleStatus   @default(NOT_STARTED)
+  startedAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  completedAt DateTime?
+  //TODO make this a foriegn key
+  currentStep Int?  
+
+  user        User           @relation(fields: [userId], references: [id])
+  module      ModuleContent  @relation(fields: [moduleId], references: [id])
+
+  @@unique([userId, moduleId]) // Ensure 1 progress per module per user
+}
+
+
+// These are separated as they are the actual static content
+model ModuleContent {
   id          Int          @id @default(autoincrement())
-  name        ModuleNames
+  name        ModuleNames  @unique
   description String
-  status      ModuleStatus @default(IN_PROGRESS)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
 
   steps       ModelStep[]
-  users       User[]
+  userProgress UserModuleInfo[]
 }
 
 model ModelStep {
@@ -48,8 +65,8 @@ model ModelStep {
   title       String
   content     Json
 
-  moduleId  Int
-  module    ModuleMetadata  @relation(fields: [moduleId], references: [id])
+  moduleId    Int
+  module      ModuleContent @relation(fields: [moduleId], references: [id])
 }
 
 //======================[Task Model]======================
@@ -72,18 +89,16 @@ model Task {
 
 //======================[Auth Models]======================
 model User {
-  id             String    @id @default(cuid())
-  username       String
-  email          String?   @unique
-  emailVerified  DateTime?
-  image          String?
-
-  moduleId       Int
-  module         ModuleMetadata @relation(fields: [moduleId], references: [id])
-
-  accounts       Account[]
-  sessions       Session[]
-}
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  userModuleProgress  UserModuleInfo[]
+}  
 
 model Account {
   id                 Int     @id @default(autoincrement())
@@ -103,24 +118,4 @@ model Account {
 
   @@map("accounts")
   @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id            Int      @id @default(autoincrement())
-  sessionToken  String   @unique
-  userId        String
-  expires       DateTime
-
-  user          User     @relation(fields: [userId], references: [id])
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier  String
-  token       String   @unique
-  expires     DateTime
-
-  @@map("verification_tokens")
-  @@unique([identifier, token])
 }

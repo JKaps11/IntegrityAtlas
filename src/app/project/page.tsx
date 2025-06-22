@@ -1,18 +1,41 @@
-'use client'
+import { getServerSession } from "next-auth/next"
+import { redirect } from "next/navigation"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { prisma } from "@/lib/prisma"
+import { QueryClient, dehydrate, HydrationBoundary } from "@tanstack/react-query"
+import DashboardClient from "@/components/Dashboard/DashboardClient"
+import { getCurrentModule } from "@/lib/queries/ModuleQueries"
+import { ensureUserModuleInfo } from "@/lib/db/module"
 
-import { useConfigStore } from "@/lib/stores"
-import { useEffect } from "react"
+export default async function ProjectPage() {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) return <p>Please sign in</p>
 
-export default function Dashboard() {
-  const setAppMode = useConfigStore((state) => state.setAppMode)
+    const userId = session.user.id
 
-  useEffect(() => {
-    setAppMode("projectHome")
-  }, [setAppMode]) // Depend on the setter function
+    // ✅ Ensure user's module progress rows are seeded
+    await ensureUserModuleInfo(userId)
 
-  return <div id="dashboard-layout" className="h-full w-full p-6 grid grid grid-cols-2 gap-4">
-    <div className="bg-gray-200 p-4">Box 1</div>
-    <div className="bg-gray-200 p-4">Box 2</div>
-    <div className="col-span-2 bg-gray-300 p-4">Box 3</div>
-  </div>
+    // ✅ Prefetch + hydrate
+    const queryClient = new QueryClient()
+    await queryClient.prefetchQuery({
+      queryKey: ['currentModule', userId],
+      queryFn: () => getCurrentModule({ queryKey: ['currentModule', userId] }),
+    })
+    const dehydratedState = dehydrate(queryClient)
+
+    // ✅ Confirm user exists
+    const user = await prisma.user.findUnique({ where: { id: userId } })
+    if (!user) return redirect("/")
+
+    return (
+      <HydrationBoundary state={dehydratedState}>
+        <DashboardClient userId={userId} />
+      </HydrationBoundary>
+    )
+  } catch (error) {
+    console.error("Failed to load project page:", error)
+    return <p>Something went wrong while loading your project.</p>
+  }
 }

@@ -11,14 +11,14 @@ import { useConfigStore } from "@/lib/stores";
 
 export default function NavBar() {
   const isLandingPage = useConfigStore(state => state.appMode === 'global')
-  return isLandingPage ? <LandingNavBar/> : <ProjectNavBar/>
+  return isLandingPage ? <LandingNavBar /> : <ProjectNavBar />
 }
 
 function LandingNavBar() {
   const { setTheme, theme } = useTheme()
   return (
     <div className="fixed top-0 w-full h-12 px-6 flex items-center justify-between border-b bg-sidebar z-50">
-      <H2>Value Finder</H2>
+      <H2>IntegrityAtlas</H2>
       <div className="flex items-center gap-4 ml-auto">
         <Switch checked={theme === 'dark'}
           onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
@@ -38,7 +38,7 @@ function ProjectNavBar() {
   const { setTheme, theme } = useTheme()
   return (
     <div className="fixed top-0 w-full h-12 px-[9px] flex items-center justify-between border-b bg-sidebar z-50">
-      <H2 className="px-4">Value Finder</H2>
+      <H2 className="px-4">IntegrityAtlas</H2>
 
       <div className="flex items-center gap-4 ml-auto">
         <Switch checked={theme === 'dark'}
