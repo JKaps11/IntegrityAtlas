@@ -1,40 +1,29 @@
-"use client";
-
-import { useSession, signIn, signOut } from "next-auth/react";
+import { signIn, signOut } from "@/lib/auth/auth";
 import { Button } from "../ui/button";
-import { useState } from "react";
 
-export default function SignInButton() {
-  const { data: session } = useSession();
-  const [isSigningIn, setIsSigningIn] = useState(false);
-
-  const handleSignIn = () => {
-    setIsSigningIn(true);
-    signIn("google", { callbackUrl: "/project" });
-  };
-
-  // If already signed in, show “Continue as …”
-  if (session) {
-    return <Button onClick={handleSignIn}>Continue as {session.user.email}</Button>;
-  }
-
+ 
+export default function SignIn() {
   return (
-    <Button onClick={handleSignIn} disabled={isSigningIn}>
-      {isSigningIn ? "Signing in…" : "Sign in"}
-    </Button>
-  );
-}
-
-export function SignOutButton() {
-  const { data: session } = useSession();
-  const isSignedIn = !!session;
-
-  return (
-    <Button
-      onClick={() => signOut( { callbackUrl: "/" })}
-      disabled={!isSignedIn}
+    <form
+      action={async () => {
+        "use server"
+        await signIn("google")
+      }}
     >
-      Sign out
-    </Button>
-  );
+      <Button type="submit">Signin with Google</Button>
+    </form>
+  )
+} 
+
+export function SignOut() {
+  return (
+    <form
+      action={async () => {
+        "use server"
+        await signOut()
+      }}
+    >
+      <button type="submit">Sign Out</button>
+    </form>
+  )
 }
