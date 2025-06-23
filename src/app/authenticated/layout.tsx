@@ -7,7 +7,8 @@ export default function ProjectLayout({
   children: React.ReactNode;
 }>) {
 
-  return <SidebarProvider>
+  return <main className="h-full w-full flex-1"> 
+  <SidebarProvider>
 
     <SideBar />
     <SidebarInset className="overflow-hidden">
@@ -17,4 +18,5 @@ export default function ProjectLayout({
     </SidebarInset>
     {/* Overlays */}
   </SidebarProvider>
+  </main>
 }

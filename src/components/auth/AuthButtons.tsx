@@ -1,13 +1,12 @@
 import { signIn, signOut } from "@/lib/auth/auth";
 import { Button } from "../ui/button";
 
- 
 export default function SignIn() {
   return (
     <form
       action={async () => {
         "use server"
-        await signIn("google")
+        await signIn("google", {redirectTo: '/authenticated'})
       }}
     >
       <Button type="submit">Signin with Google</Button>
@@ -20,10 +19,10 @@ export function SignOut() {
     <form
       action={async () => {
         "use server"
-        await signOut()
+        await signOut({ redirectTo: "/" })
       }}
     >
-      <button type="submit">Sign Out</button>
+      <Button type="submit">Sign Out</Button>
     </form>
   )
 }

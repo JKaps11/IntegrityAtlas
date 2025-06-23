@@ -1,13 +1,5 @@
-import WelcomeSection from "@/components/LandingPage/WelcomeSection";
+import { redirect } from "next/navigation";
 
-export default function LandingPage() {
-  return <div className="size-full flex flex-col">
-    <WelcomeSection/>
-    <section>
-
-    </section>
-    <section>
-      
-    </section>
-  </div>
+export default function Page() {
+  redirect("/public");
 }

@@ -11,14 +11,14 @@ import {
   SidebarTrigger,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { BookUser, BrainCircuit, Calendar, ClipboardList, LayoutDashboardIcon, LightbulbIcon } from "lucide-react";
+import { BookUser, BrainCircuit, Calendar, ClipboardList, HelpCircle, LayoutDashboardIcon, LightbulbIcon, Settings, SunMoon, User } from "lucide-react";
 import Link from "next/link";
-import { title } from "process";
-
+import ThemeSwitch from "../Settings/ThemeSwtich";
+import { SignOut } from "../auth/AuthButtons";
+import { ProfileAvatar } from "../Settings/ProfileAvatar";
 export default function SideBar() {
 
-
-  const discoveryMenuItems= [
+  const discoveryMenuItems = [
     {
       title: "Dashboard",
       url: "/project",
@@ -56,7 +56,13 @@ export default function SideBar() {
 
   return (
     <Sidebar side="left" collapsible="icon">
-      <SidebarHeader className="h-12" />
+      <SidebarHeader className="w-full flex flex-row gap-4 jusify-between items-center">
+        <SidebarTrigger />
+        <div className="flex flex-row gap-2 items-center">
+          <SunMoon className="h-4 w-4" />
+          <ThemeSwitch />
+        </div>
+      </SidebarHeader>
       <SidebarContent className="overflow-hidden">
         <SidebarGroup className="overflow-hidden">
           <SidebarGroupLabel >Self Discovery</SidebarGroupLabel>
@@ -92,11 +98,37 @@ export default function SideBar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <SidebarGroup className="overflow-hidden">
+          <SidebarGroupLabel >Settings</SidebarGroupLabel>
+          <SidebarGroupContent className="overflow-hidden">
+            <SidebarMenu className="overflow-hidden">
+              <SidebarMenuItem key={"theme"} className="flex flex-row justify-between">
+
+              </SidebarMenuItem>
+              <SidebarMenuItem key={'help'}>
+                <SidebarMenuButton asChild>
+                  <Link href={`/help`} className="flex items-center gap-2">
+                    <HelpCircle className="h-4 w-4" />
+                    <span>Help</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem key={'generalSettings'}>
+                <SidebarMenuButton asChild>
+                  <Link href={`/authenticated/settings`} className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    <span>GeneralSettings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent >
-      <SidebarFooter>
-        <SidebarTrigger />
+      <SidebarFooter className="flex flex-row justify-end items-center">
+        <SignOut />
+        <ProfileAvatar />
       </SidebarFooter>
     </Sidebar>
   );
 }
-

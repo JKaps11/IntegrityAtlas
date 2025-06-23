@@ -1,41 +1,33 @@
-import { getServerSession } from "next-auth/next"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { prisma } from "@/lib/prisma"
-import { QueryClient, dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import DashboardClient from "@/components/Dashboard/DashboardClient"
-import { getCurrentModule } from "@/lib/queries/ModuleQueries"
-import { ensureUserModuleInfo } from "@/lib/db/module"
+import { getUserId } from "@/lib/auth/auth-helper";
+import { findCurrentModuleInfo, getModuleContentById, getNumberOfModuleSteps, initUserModuleInfo } from "@/lib/db/module"
 
 export default async function ProjectPage() {
-  try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) return <p>Please sign in</p>
 
-    const userId = session.user.id
+  const userId = await getUserId();
 
-    // ✅ Ensure user's module progress rows are seeded
-    await ensureUserModuleInfo(userId)
+  //create neccessary user stuff
+  await initUserModuleInfo(userId)
 
-    // ✅ Prefetch + hydrate
-    const queryClient = new QueryClient()
-    await queryClient.prefetchQuery({
-      queryKey: ['currentModule', userId],
-      queryFn: () => getCurrentModule({ queryKey: ['currentModule', userId] }),
-    })
-    const dehydratedState = dehydrate(queryClient)
+  //find information neccesairy for dashboard
+  //module info
+  const { moduleId, status, startedAt, updatedAt, currentStep } =
+    await findCurrentModuleInfo(userId)
 
-    // ✅ Confirm user exists
-    const user = await prisma.user.findUnique({ where: { id: userId } })
-    if (!user) return redirect("/")
+  const [{ name, description }, numSteps] = await Promise.all([
+    getModuleContentById(moduleId),
+    getNumberOfModuleSteps(moduleId),
+  ])
 
-    return (
-      <HydrationBoundary state={dehydratedState}>
-        <DashboardClient userId={userId} />
-      </HydrationBoundary>
-    )
-  } catch (error) {
-    console.error("Failed to load project page:", error)
-    return <p>Something went wrong while loading your project.</p>
-  }
+
+  return <DashboardClient currModuleInfo={{
+    name,
+    description,
+    status,
+    currStep: currentStep ?? 0,
+    totalSteps: numSteps,
+    startTime: startedAt.toISOString(),
+    updatedOrCompletedTime: updatedAt?.toISOString(),
+  }}
+  />
 }

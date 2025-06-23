@@ -56,11 +56,11 @@ model ModuleContent {
   name        ModuleNames  @unique
   description String
 
-  steps       ModelStep[]
+  steps       ModuleStep[]
   userProgress UserModuleInfo[]
 }
 
-model ModelStep {
+model ModuleStep {
   id          Int          @id @default(autoincrement())
   title       String
   content     Json
