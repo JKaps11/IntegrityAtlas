@@ -17,6 +17,13 @@ export const H2 = ({ className = "", children }: Props) => (
   </h2>
 )
 
+export const H3 = ({ className = "", children }: Props) => (
+  <h3 className={` scroll-m-20  text-xl font-semibold tracking-tight ${className}`}>
+    {children}
+  </h3>
+)
+
+
 export const P = ({ className = "", children }: Props) => (
   <p className={`text-muted-foreground text-xl leading-7 [&:not(:first-child)]:mt-6 ${className}`}>
     {children}

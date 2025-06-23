@@ -1,5 +1,5 @@
 import SideBar from "@/components/common/SideBar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function ProjectLayout({
   children,
@@ -9,7 +9,6 @@ export default function ProjectLayout({
 
   return <main className="h-full w-full flex-1"> 
   <SidebarProvider>
-
     <SideBar />
     <SidebarInset className="overflow-hidden">
     <div id="padding-for-content-under-navbar" className="pt-12">
@@ -17,6 +16,7 @@ export default function ProjectLayout({
     </div>
     </SidebarInset>
     {/* Overlays */}
+    
   </SidebarProvider>
   </main>
 }

@@ -34,6 +34,14 @@ export const getUserModuleProgress = cache(async (userId: string): Promise<UserM
   return prisma.userModuleInfo.findMany({ where: { userId } })
 })
 
+export const getUserModuleCompletionPercentage = cache(async (userId: string): Promise<number> => {
+  //TODO: Fix up cacheing here. we definetyl dont need to call moduleContent.count twice. or maybe that actually doenst get called twice since cached under the hoood
+  const modulesComplete: number = await prisma.userModuleInfo.count({where: {userId, status: ModuleStatus.COMPLETED}})
+  const numModules: number = await prisma.moduleContent.count()
+  
+  return numModules > 0 ? Math.min(100, Math.max(0, (modulesComplete / numModules) * 100)) : 0
+})
+
 export const findCurrentModuleInfo = cache(async (
   userId: string,
 ): Promise<UserModuleInfo> => {

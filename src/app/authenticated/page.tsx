@@ -1,6 +1,6 @@
-import DashboardClient from "@/components/Dashboard/DashboardClient"
+import Dashboard from "@/components/Dashboard/Dashboard"
 import { getUserId } from "@/lib/auth/auth-helper";
-import { findCurrentModuleInfo, getModuleContentById, getNumberOfModuleSteps, initUserModuleInfo } from "@/lib/db/module"
+import { findCurrentModuleInfo, getModuleContentById, getNumberOfModuleSteps, getUserModuleCompletionPercentage, initUserModuleInfo } from "@/lib/db/module"
 
 export default async function ProjectPage() {
 
@@ -10,7 +10,11 @@ export default async function ProjectPage() {
   await initUserModuleInfo(userId)
 
   //find information neccesairy for dashboard
-  //module info
+
+  //module completion progress
+  const moduleCompletionPercentage = await getUserModuleCompletionPercentage(userId)
+
+  //current module info
   const { moduleId, status, startedAt, updatedAt, currentStep } =
     await findCurrentModuleInfo(userId)
 
@@ -20,7 +24,7 @@ export default async function ProjectPage() {
   ])
 
 
-  return <DashboardClient currModuleInfo={{
+  return <Dashboard currModuleInfo={{
     name,
     description,
     status,
@@ -29,5 +33,6 @@ export default async function ProjectPage() {
     startTime: startedAt.toISOString(),
     updatedOrCompletedTime: updatedAt?.toISOString(),
   }}
+  modualCompletionPercentage={moduleCompletionPercentage}
   />
 }

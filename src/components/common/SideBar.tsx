@@ -11,7 +11,7 @@ import {
   SidebarTrigger,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { BookUser, BrainCircuit, Calendar, ClipboardList, HelpCircle, LayoutDashboardIcon, LightbulbIcon, Settings, SunMoon, User } from "lucide-react";
+import { BookUser, BrainCircuit, Calendar, ClipboardList, HelpCircle, Info, LayoutDashboardIcon, LightbulbIcon, Settings, SunMoon, User } from "lucide-react";
 import Link from "next/link";
 import ThemeSwitch from "../Settings/ThemeSwtich";
 import { SignOut } from "../auth/AuthButtons";
@@ -21,22 +21,22 @@ export default function SideBar() {
   const discoveryMenuItems = [
     {
       title: "Dashboard",
-      url: "/project",
+      url: "/authenticated",
       icon: LayoutDashboardIcon
     },
     {
       title: "Learning Modules",
-      url: "/project/learningModules",
+      url: "/authenticated/modules",
       icon: BookUser,
     },
     {
       title: "Value Organizer",
-      url: "/project/valueOrganizer",
+      url: "/authenticated/valueOrganizer",
       icon: LightbulbIcon
     },
     {
       title: "Value Mind Map",
-      url: "/project/mindMap",
+      url: "/authenticated/valueMindMap",
       icon: BrainCircuit
     }
   ]
@@ -44,12 +44,12 @@ export default function SideBar() {
   const manageMenuItems = [
     {
       title: "Tasks",
-      url: "/project/tasks",
+      url: "/authenticated/tasks",
       icon: ClipboardList
     },
     {
       title: "Calendar",
-      url: "/project/calendar",
+      url: "/authenticated/calendar",
       icon: Calendar
     },
   ]
@@ -61,6 +61,14 @@ export default function SideBar() {
         <div className="flex flex-row gap-2 items-center">
           <SunMoon className="h-4 w-4" />
           <ThemeSwitch />
+        </div>
+        <div className="flex flex-row gap-2 items-center">
+          <Link href="public/help" aria-label="Help">
+            <HelpCircle className="w-5 h-5 hover:text-primary transition-colors" />
+          </Link>
+          <Link href="public/about" aria-label="About">
+            <Info className="w-5 h-5 hover:text-primary transition-colors" />
+          </Link>
         </div>
       </SidebarHeader>
       <SidebarContent className="overflow-hidden">
